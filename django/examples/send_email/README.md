@@ -1,0 +1,1 @@
+1. Необходимо в settings.py указать действительный почтовый адрес и пароль (EMAIL_HOST_USER и EMAIL_HOST_PASSWORD)
