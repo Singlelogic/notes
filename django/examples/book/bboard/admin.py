@@ -5,7 +5,7 @@ from .models import Bb, Rubric
 
 class BdAdmin(admin.ModelAdmin):
     # последовательность имен полей, которые должны выводиться в списке записей;
-    list_display = ('title', 'content', 'price', 'published', 'rubric')
+    list_display = ('title', 'content', 'price', 'kind', 'published', 'rubric')
     # последовательность имен полей, которые должны быть
     # преобразованы в гиперссылки, ведущие на страницу правки записи;
     list_display_links = ('title', 'content')
