@@ -20,6 +20,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
+# Используется программным ядром Django и подсистемой разграничения доступа
+# для шифрования важных данных;
 SECRET_KEY = '3hg*+@mp3&1%1jxmf3#7f=c-++4b7pf)kn(&4+@w-b*jfdm^^3'
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -31,27 +33,47 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    # Административный веб-сайт Django;
     'django.contrib.admin',
     # реализует подсистему разграничения доступа;
     'django.contrib.auth',
+    # Хранит список всех моделей, объявленных во всех приложениях сайта.
+    # Необходимо при создании полиморфных связей между моделями;
     'django.contrib.contenttypes',
     # реализует подсистему, обслуживающую серверные сессии;
     'django.contrib.sessions',
+    # Выводит всплывающие сообщения;
     'django.contrib.messages',
+    # Обрабатывает статичеческие файлы;
     'django.contrib.staticfiles',
     'bboard.apps.BboardConfig',
 ]
 
+# Посредник (middleware) Django - програмный модуль, выполняющий предварительную
+# обработку клиентского запроса перед передачей его контроллеру и
+# окончательную обработку ответа, сгенерированного контроллером,
+# перед его отправкой клиенту;
 MIDDLEWARE = [
+    # Реализует дополнительную защиту сайта от сетевых атак;
     'django.middleware.security.SecurityMiddleware',
+    # Обрабатывает серверные сессии на низком уровне;
     'django.contrib.sessions.middleware.SessionMiddleware',
+    # Участвует в предварительной обработке запросов;
     'django.middleware.common.CommonMiddleware',
+    # Осуществляет защиту от межссайтовых атак при обработке данных,
+    # переданных сайту HTTP-методом POST;
     'django.middleware.csrf.CsrfViewMiddleware',
+    # Добавляет в объект запроса атрибут, хранящий текущего пользователя.
+    # Через этот атрибут в контроллерах и шаблонах можно выяснить, какой
+    # пользователь выполнил вход на сайт и выполнил ли вообще.
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    # Обрабатывает всплывающие сообщения на низком уровне;
     'django.contrib.messages.middleware.MessageMiddleware',
+    # Реализует дополнительную защиту сайта от сетевых атак;
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# Путь к модулю, в котором записаны маршруты уровня проекта, в виде строки;
 ROOT_URLCONF = 'book.urls'
 
 TEMPLATES = [
@@ -113,8 +135,17 @@ LANGUAGE_CODE = 'ru'
 
 TIME_ZONE = 'UTC'
 
+# Если True, будет активизирована встроенная в Django система
+# автоматического перевода на язык, записанный в параметре LANGUAGE_CODE,
+# после чего все системные сообщения и страницы административного сайта,
+# будут выводиться на этом языке. Если False, автоматический перевод
+# выполняться не будет, и сообщения и страницы станут выводиться на
+# английском языке;
 USE_I18N = True
 
+# Логическое значение, указывающее, будет ли локализованное форматирование
+# данных включено по умолчанию или нет. Если это значение равно True,
+# Django будет отображать числа и даты в формате текущей локали.
 USE_L10N = True
 
 USE_TZ = True
