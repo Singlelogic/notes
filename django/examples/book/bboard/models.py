@@ -32,11 +32,6 @@ class Bb(models.Model):
     def __str__(self):
         return self.title
 
-    def get_type(self):
-        for kind in self.KINDS:
-            if kind[0] == self.kind:
-                return kind[1]
-
     class Meta:
         # название модели во множественном числе;
         verbose_name_plural = 'Объявления'
