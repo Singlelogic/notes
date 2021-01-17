@@ -14,13 +14,13 @@ def index(request):
     return render(request, 'bboard/index.html', context)
 
 
-def by_rubric(request, rubric_id):
-    bbs = Bb.objects.filter(rubric=rubric_id)
-    rubrics = Rubric.objects.all()
-    current_rubric = Rubric.objects.get(pk=rubric_id)
-    context = {'bbs': bbs, 'rubrics': rubrics,
-               'current_rubric': current_rubric}
-    return render(request, 'bboard/by_rubric.html', context)
+# def by_rubric(request, rubric_id):
+#     bbs = Bb.objects.filter(rubric=rubric_id)
+#     rubrics = Rubric.objects.all()
+#     current_rubric = Rubric.objects.get(pk=rubric_id)
+#     context = {'bbs': bbs, 'rubrics': rubrics,
+#                'current_rubric': current_rubric}
+#     return render(request, 'bboard/.by_rubric.html', context)
 
 
 class BbCreateView(CreateView):
@@ -43,4 +43,16 @@ class BbDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['rubrics'] = Rubric.objects.all()
+        return context
+
+
+class RubricDetailView(DetailView):
+    model = Rubric
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        bbs = Bb.objects.filter(rubric=kwargs['object'].pk)
+        context['bbs'] = bbs
+        rubrics = Rubric.objects.all()
+        context['rubrics'] =  rubrics
         return context
