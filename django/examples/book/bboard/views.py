@@ -1,27 +1,38 @@
-from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.views.generic.list import ListView
 
-from .forms import BbForm
 from .models import Bb, Rubric
 
 
-def index(request):
-    bbs = Bb.objects.all()
-    rubrics = Rubric.objects.all()
-    context = {'bbs': bbs, 'rubrics': rubrics}
-    return render(request, 'bboard/index.html', context)
-
-
 class BbCreateView(CreateView):
+    # Атрибут, задает ссылку на класс модели, на основе которой будет создана форма
+    model = Bb
+
+    # Атрибут, указывает последовательность имен полей модели, который должны
+    # присутствовать в форме. Можно указать либо модель и список ее полей
+    # в атрибутах model и fields, либо непостедственно класс формы
+    # в атрибуте form_class, но никак не одновременно и то, и другое.
+    # Если указан атрибут model, то обязательно слудует задать также и
+    # атрибут fields.
+    fields = ['title', 'content', 'price', 'kind', 'rubric']
+
     # путь к файлу шаблона, создающего страницу с формой;
-    template_name = 'bboard/create.html'
+    # По умолчанию к названии модели добавляется суффикс '_form',
+    # В данном случает будет 'bb_form'.
+    template_name = 'bboard/bb_create.html'
+
+    # Атрибут, хранящий словарь с изначальными данными для занесения в только
+    # что созданную форму. Ключи элементов этого словаря должны
+    # соответствовать полям формы, а значения элементов зададут значения полей
+    initial = {'price': 0.0}
+
     # ссылка на класс формы, связанной с моделью;
-    form_class = BbForm
+    # form_class = BbForm
+
     # интернет-адрес для перенаправления после успешного сохранения данных;
-    success_url = reverse_lazy('index')
+    success_url = reverse_lazy('bb_list_url')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
@@ -59,11 +70,20 @@ class BbDetailView(DetailView):
         return context
 
 
+class BbListView(ListView):
+    model = Bb
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context['rubrics'] = Rubric.objects.all()
+        return context
+
+
 class BbByRybricView(ListView):
     # Если не указан путь к шаблону - значит, класс будет искать шаблон
     # со сформированныйм по умолчанию путем.
     # В данном примере будет путь 'bb_list.html'
-    template_name = 'bboard/by_rubric.html'
+    template_name = 'bboard/bb_by_rubric.html'
     # Задает имя переменной контекста шаблона, в которой будет сохранена
     # найденная запись.
     context_object_name = 'bbs'
@@ -129,10 +149,65 @@ class BbByRybricView(ListView):
         return context
 
 
-class BbEditView(UpdateView):
+class BbUpdateView(UpdateView):
+    # Задает модель
     model = Bb
-    form_class = BbForm
-    success_url = '/'
+
+    # Атрибут, указывает последовательность имен полей модели, который должны
+    # присутствовать в форме. Можно указать либо модель и список ее полей
+    # в атрибутах model и fields, либо непостедственно класс формы
+    # в атрибуте form_class, но никак не одновременно и то, и другое.
+    # Если указан атрибут model, то обязательно слудует задать также и
+    # атрибут fields.
+    fields = ('title', 'content', 'price', 'kind', 'rubric')
+
+    # Путь к файлу шаблона, создающего страницу с формой;
+    # По умолчанию к названии модели добавляется суффикс '_form',
+    # В данном случает будет 'bb_form'.
+    template_name = 'bboard/bb_update.html'
+
+    # интернет-адрес для перенаправления после успешного сохранения данных;
+    success_url = reverse_lazy('bb_list_url')
+
+    # Задает имя поля модели, в котором хранится слаг (по умолчанию: 'slug')
+    # slug_field = 'slug'
+
+    # Задает имя URL-параметра, через который контроллер-класс получит
+    # слаг (по умолчанию: 'slug')
+    # slug_url_kwarg = 'slug'
+
+    # Задает июя URL-параметра, через который контроллер-класс получит
+    # ключ записи (по умолчанию: 'pl')
+    # pk_url_kwarg = 'pk'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['rubrics'] = Rubric.objects.all()
+        return context
+
+
+class BbDeleteView(DeleteView):
+    # Задает модель
+    model = Bb
+
+    # Путь к файлу шаблона, создающего страницу с формой;
+    # По умолчанию к названии модели добавляется суффикс '_confirm_delete',
+    # В данном случает будет 'bb_confirm_delete'.
+    template_name = 'bboard/bb_delete.html'
+
+    # интернет-адрес для перенаправления после удаления;
+    success_url = reverse_lazy('bb_list_url')
+
+    # Задает имя поля модели, в котором хранится слаг (по умолчанию: 'slug')
+    # slug_field = 'slug'
+
+    # Задает имя URL-параметра, через который контроллер-класс получит
+    # слаг (по умолчанию: 'slug')
+    # slug_url_kwarg = 'slug'
+
+    # Задает июя URL-параметра, через который контроллер-класс получит
+    # ключ записи (по умолчанию: 'pl')
+    # pk_url_kwarg = 'pk'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

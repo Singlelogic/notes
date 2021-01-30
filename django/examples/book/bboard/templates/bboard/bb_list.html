@@ -1,7 +1,7 @@
 {% extends "layout/basic.html" %}
 
 {% block content %}
-    {% for bb in bbs %}
+    {% for bb in bb_list %}
     <div>
         <h2><a href="{% url 'detail' pk=bb.pk %}">{{ bb.title }}</a></h2>
         <p>{{ bb.content }}</p>
