@@ -4,11 +4,14 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.views.generic.list import ListView
 
 from .models import Bb, Rubric
+from .forms import BbForm
 
 
 class BbCreateView(CreateView):
     # Атрибут, задает ссылку на класс модели, на основе которой будет создана форма
     model = Bb
+    # ссылка на класс формы, связанной с моделью;
+    form_class = BbForm
 
     # Атрибут, указывает последовательность имен полей модели, который должны
     # присутствовать в форме. Можно указать либо модель и список ее полей
@@ -16,7 +19,7 @@ class BbCreateView(CreateView):
     # в атрибуте form_class, но никак не одновременно и то, и другое.
     # Если указан атрибут model, то обязательно слудует задать также и
     # атрибут fields.
-    fields = ['title', 'content', 'price', 'kind', 'rubric']
+    # fields = ['title', 'content', 'price', 'kind', 'rubric']
 
     # путь к файлу шаблона, создающего страницу с формой;
     # По умолчанию к названии модели добавляется суффикс '_form',
@@ -27,9 +30,6 @@ class BbCreateView(CreateView):
     # что созданную форму. Ключи элементов этого словаря должны
     # соответствовать полям формы, а значения элементов зададут значения полей
     initial = {'price': 0.0}
-
-    # ссылка на класс формы, связанной с моделью;
-    # form_class = BbForm
 
     # интернет-адрес для перенаправления после успешного сохранения данных;
     success_url = reverse_lazy('bb_list_url')
