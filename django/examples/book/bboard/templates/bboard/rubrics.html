@@ -1,0 +1,61 @@
+{% extends "layout/basic.html" %}
+
+{% block content %}
+    <form method="post">
+        {% csrf_token %}
+        {{ formset.management_form }}
+<!--    management_form - поддерживаемый всеми классами наборов форм. -->
+<!--    Он хранит ссылку на служебную форму, входящую в состав набора-->
+<!--    и хранящую необходимые для работы служебные данные.-->
+        {% if formset.non_form_errors %}
+            <ul>
+                {% for error in formset.non_form_errors %}
+<!--            non_form_errors - возвращает список сообщений обошибках, -->
+<!--            относящихся ко всему набору.-->
+                    <li>
+                        <em>{{ error|escape }}</em>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        {% for form in formset %}
+
+            {% for hidden in form.hidden_fields %}
+<!--            hidden_fields() - возвращает список невидимых полей, представляющихся-->
+<!--            скрытыми полями HTML;-->
+                {{ hidden }}
+            {% endfor %}
+
+            {% if form.non_field_error %}
+                <ul>
+                    {% for error in form.non_field_errors %}
+                        <li>
+                            <em>{{ error|escape }}</em>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            {% for field in form.visible_fields %}
+<!--            visible_fields() - возвращает список видимых полей, которые представляются -->
+<!--            на экране обычными элементами управления;-->
+                {% if field.errors %}
+                    <ul>
+                        {% for error in field.errors %}
+                            <li>
+                                <em>{{ error|escape }}</em>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+                <p>
+                    {{ field.label_tag }}<br>
+                    {{ field }}<br>
+                    {{ field.help_text }}
+                </p>
+            {% endfor %}
+        {% endfor %}
+
+        <input type="submit" value="Сохранить">
+    </form>
+{% endblock %}

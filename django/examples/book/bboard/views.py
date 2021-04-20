@@ -1,3 +1,6 @@
+from django.forms import modelformset_factory
+from django.forms.formsets import ORDERING_FIELD_NAME
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
@@ -213,3 +216,39 @@ class BbDeleteView(DeleteView):
         context = super().get_context_data(**kwargs)
         context['rubrics'] = Rubric.objects.all()
         return context
+
+
+def rubrics(request):
+    # modelformset_factory - создания наборов форм, связанных с моделями
+    RubricFormSet = modelformset_factory(Rubric, fields=('name',),
+                                         can_order=True, can_delete=True)
+    # can_order - если True, то посредством набора форм можно переупорядочивать
+    # записи связанной с ним модели, если False - нельзя (поведение по умолчанию);
+    # can_delete - если True, то посредством набора форм можно удалять записи
+    # связанной с ним модели, если False - нельзя (поведение по умолчанию);
+    if request.method == 'POST':
+        formset = RubricFormSet(request.POST)
+        if formset.is_valid():
+            for form in formset:
+                if form.cleaned_data:
+                    rubrics = form.save(commit=False)
+                    rubrics.order = form.cleaned_data[ORDERING_FIELD_NAME]
+                    # Переупорядочивание записей достигается тем, что в каждой форме, составляющей
+                    # набор, автоматически создается целочисленное поле с именем, заданным
+                    # в переменной ORDERING_FIELD_NAME из модуля django.forms.formsets.
+                    # В этом поле хранится целочисленный порядковый номер текущей
+                    # записи в последовательности.
+                    rubrics.save()
+
+            formset.save(commit=False)
+            # Если метод save был вызван с параметром commit равным False,
+            # необходимо перебрать все удаленные записи, перечисленные в списке
+            # из атрибута deleted_objects и вызвать у каждой метод delete.
+            for rubric in formset.deleted_objects:
+                rubric.delete()
+
+            return redirect('bb_list_url')
+    else:
+        formset = RubricFormSet()
+    context = {'formset': formset}
+    return render(request, 'bboard/rubrics.html', context)
