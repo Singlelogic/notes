@@ -1,4 +1,4 @@
-from django.forms import modelformset_factory
+from django.forms import modelformset_factory, inlineformset_factory
 from django.forms.formsets import ORDERING_FIELD_NAME
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
@@ -221,7 +221,8 @@ class BbDeleteView(DeleteView):
 def rubrics(request):
     # modelformset_factory - создания наборов форм, связанных с моделями
     RubricFormSet = modelformset_factory(Rubric, fields=('name',),
-                                         can_order=True, can_delete=True)
+                                         can_order=True, can_delete=True ,extra=2)
+    # extra - задает количество 'пустых' форм;
     # can_order - если True, то посредством набора форм можно переупорядочивать
     # записи связанной с ним модели, если False - нельзя (поведение по умолчанию);
     # can_delete - если True, то посредством набора форм можно удалять записи
@@ -252,3 +253,17 @@ def rubrics(request):
         formset = RubricFormSet()
     context = {'formset': formset}
     return render(request, 'bboard/rubrics.html', context)
+
+
+def bbs(request, rubric_id):
+    BbsFormSet = inlineformset_factory(Rubric, Bb, form=BbForm, extra=1)
+    rubric = Rubric.objects.get(pk=rubric_id)
+    if request.method == 'POST':
+        formset = BbsFormSet(request.POST, instance=rubric)
+        if formset.is_valid():
+            formset.save()
+            return redirect('bb_list_url')
+    else:
+        formset = BbsFormSet(instance=rubric)
+    context = {'formset': formset, 'current_rubric': rubric}
+    return render(request, 'bboard/bbs.html', context)

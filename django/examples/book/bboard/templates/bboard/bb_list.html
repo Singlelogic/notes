@@ -1,7 +1,11 @@
 {% extends "layout/basic.html" %}
 
 {% block content %}
-    <a href="{% url 'rubrics_url' %}">Рубрики</a>
+    Набор форм рубрик: <a href="{% url 'rubrics_url' %}">Рубрики</a><br>
+    Наборы форм объявлений по рубрикам:
+    {% for rubric in rubrics %}
+        <a href="{% url 'bbs_url' rubric_id=rubric.pk %}">{{ rubric.name }}</a>
+    {% endfor %}
 
     {% for bb in bb_list %}
     <div>

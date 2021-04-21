@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import (
     BbCreateView, BbDetailView, BbByRybricView, BbUpdateView,
-    BbListView, BbDeleteView, rubrics
+    BbListView, BbDeleteView, rubrics, bbs
 )
 
 
@@ -13,4 +13,5 @@ urlpatterns = [
     path('update/<int:pk>/', BbUpdateView.as_view(), name='edit_bb'),
     path('delete/<int:pk>/', BbDeleteView.as_view(), name='bb_delete_url'),
     path('rubrics/', rubrics, name='rubrics_url'),
+    path('bbs/<int:rubric_id>/', bbs, name='bbs_url'),
 ]
